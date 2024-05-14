@@ -18,8 +18,11 @@ export type TSubCategory = {
 }
 
 export interface CategoryModel extends Model<TCategory>{
-    isCategoryExists(id : string) : Promise<TCategory | null>
+    isCategoryExists(id : string) : Promise<TCategory | null>;
+    isCategoryExistsByName(id : string) : Promise<TCategory | null>;
+
 }
 export interface SubCategoryModel extends Model<TSubCategory>{
-    isSubCategoryExists(id : string) : Promise<TSubCategory | null>
+    isSubCategoryExists(id : string) : Boolean
+
 }
