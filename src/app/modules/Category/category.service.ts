@@ -48,7 +48,7 @@ const createSubCategoryIntoDb = async (payload: TSubCategory) => {
 };
 
 const getAllSubCategoryFromDb = async () => {
-  const result = await SubCategory.find();
+  const result = await SubCategory.find().populate('categoryId');
   return result;
 };
 

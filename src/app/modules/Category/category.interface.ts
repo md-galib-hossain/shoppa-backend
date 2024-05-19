@@ -23,7 +23,7 @@ export interface CategoryModel extends Model<TCategory>{
 
 }
 export interface SubCategoryModel extends Model<TSubCategory>{
-    isSubCategoryExists(id : string) : Boolean
-    isSubCategoryExistsByName(name : string) : Boolean
+    isSubCategoryExists(id : string) : Promise<TSubCategory | null>
+    isSubCategoryExistsByName(name : string) : Promise<TSubCategory | null>
 
 }

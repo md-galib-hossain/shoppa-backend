@@ -109,7 +109,7 @@ subCategorySchema.pre("aggregate", function (next) {
   });
 });
 subCategorySchema.statics.isSubCategoryExists = async function (id: string) {
-  const existingSubCategory = await SubCategory.findOne({ _id: id });
+  const existingSubCategory = await SubCategory.findOne({ _id: id }).populate('categoryId');
   return existingSubCategory;
 };
 // Pre-save hook to sanitize the sub category name
