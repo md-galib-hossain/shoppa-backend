@@ -32,6 +32,7 @@ categorySchema.pre("find", function (next) {
 
 categorySchema.pre("findOne", function (next) {
   this.find({ isDeleted: { $ne: true } });
+  
   next();
 });
 categorySchema.pre("aggregate", function (next) {
@@ -40,6 +41,7 @@ categorySchema.pre("aggregate", function (next) {
       isDeleted: { $ne: true },
     },
   });
+  next()
 });
 
 // Pre-save hook to sanitize the category name
@@ -74,6 +76,7 @@ const subCategorySchema = new Schema<TSubCategory, SubCategoryModel>({
     type: String,
     required: [true, "Name is required"],
     trim: true,
+    unique : true
   },
   isDeleted: {
     type: Boolean,
@@ -106,9 +109,18 @@ subCategorySchema.pre("aggregate", function (next) {
   });
 });
 subCategorySchema.statics.isSubCategoryExists = async function (id: string) {
-  const existingSubCategory = await Category.findOne({ _id: id });
+  const existingSubCategory = await SubCategory.findOne({ _id: id });
   return existingSubCategory;
 };
+// Pre-save hook to sanitize the sub category name
+subCategorySchema.pre("save", async function (next) {
+  // this.name = this.name.replace(/\s+/g, "").toLowerCase();
+  const result = await SubCategory.findOne({ name: this.name });
+  if (result) {
+    throw new AppError(httpStatus.NOT_FOUND, "Same sub category already exists!!");
+  }
+  next();
+});
 
 export const SubCategory = model<TSubCategory, SubCategoryModel>(
   "Subcategory",

@@ -24,5 +24,6 @@ export interface CategoryModel extends Model<TCategory>{
 }
 export interface SubCategoryModel extends Model<TSubCategory>{
     isSubCategoryExists(id : string) : Boolean
+    isSubCategoryExistsByName(name : string) : Boolean
 
 }
