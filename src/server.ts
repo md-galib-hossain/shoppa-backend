@@ -2,6 +2,7 @@ import { Server } from "http";
 import app from "./app";
 import config from "./app/config";
 import mongoose, { Schema, model } from "mongoose";
+import { divisionNameType } from "./app/modules/Seller/seller.constant";
 
 let server: Server;
 async function main() {
@@ -12,6 +13,9 @@ async function main() {
     server = app.listen(config.PORT, () => {
       console.log(`App listening at http://localhost:${config.PORT}`);
     });
+
+
+    
   } catch (err) {
     console.log({ err });
   }

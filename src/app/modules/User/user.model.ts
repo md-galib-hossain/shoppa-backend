@@ -2,9 +2,26 @@ import { Schema, model } from "mongoose";
 import { TUser } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
-import { userRoles, userRolesARR, userStatus, userStatusARR } from "./user.constant";
+import {
+  userRoles,
+  userRolesARR,
+  userStatus,
+  userStatusARR,
+} from "./user.constant";
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
+
+const contactNoSchema = new Schema(
+  {
+    contactNo: { type: String, required: true, unique: true },
+    status: {
+      type: String,
+      enum: ["VERIFIED", "UNVERIFIED"],
+      default: "UNVERIFIED",
+    },
+  },
+  { _id: false }
+);
 
 const userSchema = new Schema<TUser>(
   {
@@ -13,26 +30,31 @@ const userSchema = new Schema<TUser>(
       required: true,
     },
     email: {
-      type: String,
-      required: true,
+      address: { type: String, required: true ,unique: true},
+      status: {
+        type: String,
+        enum: ["VERIFIED", "UNVERIFIED"],
+        default: "UNVERIFIED",
+      },
     },
+    contact: contactNoSchema,
     password: {
       type: String,
       required: true,
     },
     needsPasswordChange: {
       type: Boolean,
-      default: true,
+      default: false,
     },
     role: {
       type: String,
       enum: userRolesARR,
-      default: 'BUYER',
+      default: "BUYER",
     },
     status: {
       type: String,
-      enum: userStatusARR ,
-      default: 'UNVERIFIED',
+      enum: userStatusARR,
+      default: "UNVERIFIED",
     },
     isDeleted: {
       type: Boolean,
@@ -56,6 +78,5 @@ userSchema.post("save", async function (doc, next) {
   doc.password = "";
   next();
 });
-
 
 export const User = model<TUser>("User", userSchema);
