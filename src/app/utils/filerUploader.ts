@@ -28,8 +28,8 @@ const uploadToCloudinary =async (file : TFile) : Promise<TCloudinaryResponse | u
 return new Promise((resolve ,reject)=>{
 
     cloudinary.uploader.upload(
-        file?.path,(error : Error, result : TCloudinaryResponse)=>{
-            fs.unlinkSync(file?.path)
+        file.path,(error : Error, result : TCloudinaryResponse)=>{
+            fs.unlinkSync(file.path)
             if(error){
                 reject(error)
             }else{

@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { TUser } from "./user.interface";
+import { TUser, UserModel } from "./user.interface";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import {
@@ -23,7 +23,7 @@ const contactNoSchema = new Schema(
   { _id: false }
 );
 
-const userSchema = new Schema<TUser>(
+const userSchema = new Schema<TUser,UserModel>(
   {
     userName: {
       type: String,
@@ -66,6 +66,24 @@ const userSchema = new Schema<TUser>(
   }
 );
 
+
+// Query Middleware
+// userSchema.pre('find', function (next) {
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+// userSchema.pre('findOne', function (next) {
+
+//   this.find({ isDeleted: { $ne: true } });
+//   next();
+// });
+
+// userSchema.pre('aggregate', function (next) {
+//   this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+//   next();
+// });
+
+
 userSchema.pre("save", async function (next) {
   const user = this; //current document
   user.password = await bcrypt.hash(
@@ -79,4 +97,14 @@ userSchema.post("save", async function (doc, next) {
   next();
 });
 
-export const User = model<TUser>("User", userSchema);
+userSchema.statics.isUserExists = async function (email: string, contactNo: string) {
+  const query = {
+    $or: [
+      { "email.address": email },
+      { "contact.contactNo": contactNo }
+    ]
+  };
+  return await this.findOne(query).select('+password');
+};
+
+export const User = model<TUser,UserModel>("User", userSchema);

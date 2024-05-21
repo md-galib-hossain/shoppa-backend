@@ -8,7 +8,6 @@ import handleCastError from "../errors/handleCastError";
 import handleDuplicateError from "../errors/handleDuplicateError";
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
-  console.log(err);
   let statusCode = 500;
   let message = "Something went wrong!";
   let errorSources: TErrorSources = [

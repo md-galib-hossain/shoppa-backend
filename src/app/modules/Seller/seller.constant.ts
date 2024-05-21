@@ -33,3 +33,29 @@ const divisions = [
     }
   ];
 
+export const sellerSearchableFields =[
+  'fullName',
+  'presentAddress',
+  'permanentAddress',
+'shopName',
+  'email',
+  'userName',
+  'warehouseAddressInfo.address',
+  'warehouseAddressInfo.country',
+  'warehouseAddressInfo.division',
+  'warehouseAddressInfo.city',
+  'warehouseAddressInfo.postCode',
+  'businessAddressInfo.address',
+  'businessAddressInfo.country',
+  'businessAddressInfo.division',
+  'businessAddressInfo.city',
+  'businessAddressInfo.postCode',
+  'returnAddressInfo.address',
+  'returnAddressInfo.country',
+  'returnAddressInfo.division',
+  'returnAddressInfo.city',
+  'returnAddressInfo.postCode',
+  'nidInfo.fullName',
+  'nidInfo.idNo',
+
+];

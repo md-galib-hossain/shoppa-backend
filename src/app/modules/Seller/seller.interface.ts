@@ -52,7 +52,10 @@ export type TSeller = {
   accountType: "INDIVIDUAL" | "BUSINESS";
   age: number;
   sellerType: "LOCAL" | "GLOBAL";
+  userName: string;
+  email: string;
   profileImg?: string;
   user: Types.ObjectId;
   status: "VERIFIED" | "UNVERIFIED" | "BANNED";
+  isDeleted : boolean
 };

@@ -1,3 +1,4 @@
+import { Model } from "mongoose";
 import { StringValidation } from "zod";
 
 export type TUser = {
@@ -24,3 +25,9 @@ export type TUserStatus = {
   UNVERIFIED: string;
   BANNED: string;
 };
+
+export interface UserModel extends Model<TUser> {
+
+  isUserExists(email : string, contactNo : string) : Promise<TUser | null>
+
+}

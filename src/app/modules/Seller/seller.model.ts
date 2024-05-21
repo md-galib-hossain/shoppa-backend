@@ -33,7 +33,7 @@ const nidInfoSchema = new Schema(
     idNo: { type: String },
     idFrontImg: { type: String },
     idBackImg: { type: String },
-    isDeleted: { type: Boolean },
+    
     status: {
       type: String,
       enum: ["VERIFIED", "UNVERIFIED", "PENDING"],
@@ -58,6 +58,14 @@ const sellerSchema = new Schema<TSeller>(
       enum: ["INDIVIDUAL", "BUSINESS"],
       required: true,
     },
+    userName: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
+      required: true,
+    },
     age: {
       type: Number,
       default: 18,
@@ -70,9 +78,9 @@ const sellerSchema = new Schema<TSeller>(
       },
     },
     sellerType: { type: String, enum: ["LOCAL", "GLOBAL"], required: true },
-
+    isDeleted: { type: Boolean,default : false },
     profileImg: { type: String },
-    user: { type: Schema.Types.ObjectId, ref: "User", required: true },
+    user: { type: Schema.Types.ObjectId, ref: "User", required: true,  unique: true, },
     status: {
       type: String,
       enum: ["VERIFIED", "UNVERIFIED", "BANNED"],
@@ -83,5 +91,21 @@ const sellerSchema = new Schema<TSeller>(
     timestamps: true,
   }
 );
+
+// Query Middleware
+sellerSchema.pre('find', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+sellerSchema.pre('findOne', function (next) {
+  this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+sellerSchema.pre('aggregate', function (next) {
+  this.pipeline().unshift({ $match: { isDeleted: { $ne: true } } });
+  next();
+});
+
 
 export const Seller = model<TSeller>("Seller", sellerSchema);

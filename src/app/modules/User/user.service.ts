@@ -13,12 +13,13 @@ const createBuyerIntoDb = async (req: any) => {
     body: { buyer, password },
     file,
   } = req;
-  const exists = await User.findOne({
-    email: buyer?.email?.address,
-    role: userRoles.BUYER,
-  });
+
+  const exists = await User.isUserExists(
+    buyer?.email?.address,
+    buyer?.contact?.contactNo
+  );
   if (exists) {
-    throw new AppError(httpStatus.NOT_FOUND, "Email already exists!!");
+    throw new AppError(httpStatus.NOT_FOUND, "Credentials already exists!!");
   }
 
   const session = await mongoose.startSession();
@@ -40,8 +41,12 @@ const createBuyerIntoDb = async (req: any) => {
     };
     buyerData.userName = userName;
 
-    const image = await fileUploader.uploadToCloudinary(file);
-    image && (buyerData.profileImg = image?.secure_url);
+    if (file) {
+      const image = await fileUploader.uploadToCloudinary(file);
+      if (image) {
+        buyerData.profileImg = image?.secure_url;
+      }
+    }
     //transaction 1 creating user
     const newUser = await User.create([userData], { session });
 
@@ -51,6 +56,8 @@ const createBuyerIntoDb = async (req: any) => {
     buyerData.user = newUser[0]._id;
 
     //transaction 2 creating buyer
+    buyerData.email = email.address
+    buyerData.userName = userName
     const newBuyer = await Buyer.create([buyerData], { session });
     if (!newBuyer.length) {
       throw new AppError(httpStatus.BAD_REQUEST, "Failed to create buyer");
@@ -75,12 +82,13 @@ const createSellerIntoDb = async (req: any) => {
     body: { seller, password },
     file,
   } = req;
-  const exists = await User.findOne({
-    email: { address: seller?.email?.address },
-    role: userRoles.SELLER,
-  });
+  const exists = await User.isUserExists(
+    seller?.email?.address,
+    seller?.contact?.contactNo
+  );
+
   if (exists) {
-    throw new AppError(httpStatus.NOT_FOUND, "Email already exists!!");
+    throw new AppError(httpStatus.NOT_FOUND, "Credentials already exists!!");
   }
   const session = await mongoose.startSession();
   try {
@@ -91,17 +99,21 @@ const createSellerIntoDb = async (req: any) => {
     });
     seller.userName = generatedName;
     seller.needsPasswordChange = false;
-    const { email, userName, contact,role, ...sellerData } = seller;
+    const { email, userName, contact, role, ...sellerData } = seller;
     const userData = {
       email,
       userName,
       password,
       contact,
-      role
+      role,
     };
     sellerData.userName = userName;
-    const image = await fileUploader.uploadToCloudinary(file);
-    image && (sellerData.profileImg = image?.secure_url);
+    if (file) {
+      const image = await fileUploader.uploadToCloudinary(file);
+      if (image) {
+        sellerData.profileImg = image?.secure_url;
+      }
+    }
 
     //transaction 1 creating user
     const newUser = await User.create([userData], { session });
@@ -111,26 +123,25 @@ const createSellerIntoDb = async (req: any) => {
     }
     sellerData.user = newUser[0]._id;
 
-      //transaction 2 creating buyer
-      const newSeller = await Seller.create([sellerData], { session });
-      if (!newSeller.length) {
-        throw new AppError(httpStatus.BAD_REQUEST, "Failed to create seller");
-      }
-      
+    //transaction 2 creating buyer
+    sellerData.email = email.address
+    sellerData.userName = userName
+    const newSeller = await Seller.create([sellerData], { session });
+    if (!newSeller.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Failed to create seller");
+    }
+
     await session.commitTransaction();
     await session.endSession();
     const result = await Seller.findById(newSeller[0]._id).populate({
       path: "user",
       select: "-password -needsPasswordChange",
     });
-    return result
+    return result;
   } catch (err: any) {
-
     await session.abortTransaction();
     await session.endSession();
     throw new Error(err);
   }
 };
 export const UserServices = { createBuyerIntoDb, createSellerIntoDb };
-
-

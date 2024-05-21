@@ -12,3 +12,9 @@ export const userRolesARR = ['SUPER_ADMIN' , 'ADMIN' , 'BUYER' , 'SELLER' , 'MOD
 export const userStatusARR = ['VERIFIED' , 'UNVERIFIED' , 'BANNED']
 export const userRoles = arrayToObject(userRolesARR) as TUserRoles
 export const userStatus = arrayToObject(userStatusARR) as TUserStatus
+
+export const userSearchableFields =[
+    'userName',
+  
+    'email.address'
+  ];
